@@ -19,6 +19,8 @@
 #include <thread>
 #include <condition_variable>
 #include <dns-blocker/errors.hh>
+#include "monitor.hh"
+
 
 #ifdef __WINDOWS__
 #include <Windows.h>
@@ -88,6 +90,7 @@ static struct
     DNSCache *cache = nullptr;
     std::string configFileName;
     Configuration config;
+    Monitor monitor;
 
     struct
     {
@@ -344,6 +347,15 @@ static void main_process( int num, Queue *pending, std::mutex *lock, std::condit
                     status = "NX";
                     color = COLOR_YELLOW;
                 }
+
+                Event event;
+                event.time = 0;
+                event.source = endpoint.address;
+                event.resolver = dnsAddress;
+                event.address = address;
+                event.status = status;
+                event.host = request.questions[0].qname;
+                context.monitor.push(event);
 
                 //lastName = request.questions[0].qname;
                 LOG_TIMED("%sT%d  %-15s  %s  %-15s  %-15s  %s%s\n",
@@ -700,6 +712,7 @@ int main( int argc, char** argv )
     {
         if (main_loadRules(context.blacklistFileName))
         {
+            context.monitor.start();
             main_loop();
         }
         else

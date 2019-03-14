@@ -1,0 +1,3 @@
+[submodule "3rd-party/webster"]
+	path = 3rd-party/webster
+	url = https://github.com/brunexgeek/webster.git

@@ -34,6 +34,7 @@ endif()
 
 find_package(Threads)
 
+add_subdirectory(3rd-party/webster)
 
 configure_file("source/defs.hh.in" "${CMAKE_CURRENT_LIST_DIR}/source/defs.hh")
 
@@ -43,11 +44,12 @@ add_executable(dnsblocker
     "source/nodes.cc"
     "source/log.cc"
     "source/buffer.cc"
+    "source/monitor.cc"
     "source/dns.cc")
 target_include_directories(dnsblocker
     PUBLIC "include")
 target_compile_definitions(dnsblocker PRIVATE _DEFAULT_SOURCE)
-target_link_libraries(dnsblocker ${CMAKE_THREAD_LIBS_INIT})
+target_link_libraries(dnsblocker ${CMAKE_THREAD_LIBS_INIT} libwebster_static)
 set_target_properties(dnsblocker PROPERTIES
     OUTPUT_NAME "dnsblocker"
     ARCHIVE_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}"
